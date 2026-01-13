@@ -76,15 +76,4 @@ The system comes pre-seeded with administrative access for the primary overseer:
 
 This project is configured for **Vercel**. Simply connect your GitHub repository to Vercel, and it will automatically detect the Vite configuration and deploy using the `dist` output directory. The `vercel.json` ensures all client-side routes are handled correctly.
 
----
-
-## 📝 Recent Updates
-*   ✅ **AI Removal:** All Gemini API integrations removed for a lean administrative experience.
-*   ✅ **Profile Images:** Implemented local file upload system for teacher avatars.
-*   ✅ **Teacher Onboarding:** New multi-step signup process for staff.
-*   ✅ **Contact Integration:** Added email and telephone fields to staff profiles.
-*   ✅ **Admin Identity:** Updated default administrator to Vaughan Blignaut.
-
----
-
 *Designed for educators, by engineers. © 2024 ApexEdu CRM.*
