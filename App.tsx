@@ -12,34 +12,48 @@ import { TaskDetail } from './components/TaskDetail';
 import { Directory } from './components/Directory';
 import { TaskModal } from './components/TaskModal';
 import { StaffModal } from './components/StaffModal';
+import { Login } from './components/Login';
 
 const App: React.FC = () => {
-  const { currentUser, setCurrentUser, activeTaskId, currentView } = useStore();
+  const { currentUser, activeTaskId, currentView } = useStore();
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       await seedDatabase();
-      // Defaulting to Sarah Mitchell (Admin) to showcase the "Overseer" experience
-      const user = await db.users.get('u1'); 
-      if (user) setCurrentUser(user);
       setInitialized(true);
     };
     init();
-  }, [setCurrentUser]);
+  }, []);
 
   if (!initialized) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
       <div className="w-12 h-12 border-4 border-primary-100 border-t-primary-500 rounded-full animate-spin" />
-      <p className="font-bold text-gray-500 tracking-widest text-xs uppercase animate-pulse">Initializing ApexEdu Overseer...</p>
+      <p className="font-bold text-gray-500 tracking-widest text-xs uppercase animate-pulse">Initializing ApexEdu...</p>
     </div>
   );
+
+  if (!currentUser) return <Login />;
+
+  const isOverseer = currentUser.role === UserRole.ADMIN || currentUser.role === UserRole.HOD;
 
   const renderContent = () => {
     if (activeTaskId) {
       return <TaskDetail taskId={activeTaskId} />;
     }
 
+    // Teacher View Logic: Only Overview Dashboard and Task Monitor
+    if (!isOverseer) {
+      switch (currentView) {
+        case 'dashboard':
+        case 'tasks':
+          return <TeacherDashboard />;
+        default:
+          return <TeacherDashboard />;
+      }
+    }
+
+    // Admin/HOD View Logic
     switch (currentView) {
       case 'dashboard':
         return <AdminDashboard />;
@@ -48,16 +62,16 @@ const App: React.FC = () => {
       case 'directory':
         return <Directory />;
       case 'reports':
-        return <AdminDashboard />; // Placeholder for specialized compliance reports
+        return <AdminDashboard />; 
       default:
-        return <div className="p-8">View under construction: {currentView}</div>;
+        return <AdminDashboard />;
     }
   };
 
   const getViewTitle = () => {
     if (activeTaskId) return "Oversight: Task Review";
-    if (currentView === 'dashboard') return "School Performance Dashboard";
-    if (currentView === 'tasks') return "Teacher Task Monitor";
+    if (currentView === 'dashboard') return isOverseer ? "School Performance Dashboard" : "My Personal Overview";
+    if (currentView === 'tasks') return isOverseer ? "Teacher Task Monitor" : "My Active Task Stream";
     if (currentView === 'directory') return "Staff Directory & Roles";
     return currentView.charAt(0).toUpperCase() + currentView.slice(1);
   };

@@ -4,16 +4,16 @@ import { useStore } from '../store';
 import { UserRole } from '../types';
 
 export const Sidebar: React.FC = () => {
-  const { currentUser, setActiveTask, currentView, setCurrentView } = useStore();
+  const { currentUser, setActiveTask, currentView, setCurrentView, logout } = useStore();
   const isOverseer = currentUser?.role === UserRole.ADMIN || currentUser?.role === UserRole.HOD;
 
   const menuItems = [
-    { id: 'dashboard', label: 'School Overview', icon: 'grid_view' },
+    { id: 'dashboard', label: isOverseer ? 'School Overview' : 'My Dashboard', icon: 'grid_view' },
     { id: 'tasks', label: isOverseer ? 'Task Monitor' : 'My Tasks', icon: 'checklist' },
-    { id: 'directory', label: 'Teacher Directory', icon: 'groups' },
   ];
 
   if (isOverseer) {
+    menuItems.push({ id: 'directory', label: 'Teacher Directory', icon: 'groups' });
     menuItems.push({ id: 'reports', label: 'Compliance Reports', icon: 'analytics' });
   }
 
@@ -25,7 +25,9 @@ export const Sidebar: React.FC = () => {
         </div>
         <div>
           <h1 className="text-lg font-bold leading-none">ApexEdu</h1>
-          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-1">Overseer Console</p>
+          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-1">
+            {isOverseer ? 'Overseer Console' : 'Teacher Portal'}
+          </p>
         </div>
       </div>
 
@@ -49,7 +51,7 @@ export const Sidebar: React.FC = () => {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-100">
+      <div className="p-4 border-t border-gray-100 space-y-3">
         <div className="bg-gray-50 rounded-2xl p-3 flex items-center gap-3">
           <img src={currentUser?.avatar} alt="" className="w-9 h-9 rounded-full bg-gray-200 object-cover border border-gray-200" />
           <div className="overflow-hidden">
@@ -57,6 +59,13 @@ export const Sidebar: React.FC = () => {
             <p className="text-[10px] text-primary-600 font-bold uppercase">{currentUser?.role}</p>
           </div>
         </div>
+        <button 
+          onClick={logout}
+          className="w-full flex items-center gap-3 px-3 py-2 text-red-500 hover:bg-red-50 rounded-xl transition-all font-bold text-xs"
+        >
+          <span className="material-symbols-outlined text-sm">logout</span>
+          Sign Out
+        </button>
       </div>
     </aside>
   );

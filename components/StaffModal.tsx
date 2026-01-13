@@ -37,10 +37,21 @@ export const StaffModal: React.FC = () => {
         department: 'Science',
         role: UserRole.TEACHER,
         responsibilities: '',
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random().toString(36).substr(2, 5)}`,
+        avatar: '',
       });
     }
   }, [teacherToEdit, isStaffModalOpen]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, avatar: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   if (!isStaffModalOpen) return null;
 
@@ -77,11 +88,6 @@ export const StaffModal: React.FC = () => {
     }
   };
 
-  const randomizeAvatar = () => {
-    const seed = Math.random().toString(36).substr(2, 5);
-    setFormData({ ...formData, avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}` });
-  };
-
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
@@ -94,26 +100,27 @@ export const StaffModal: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="p-8 space-y-5 max-h-[80vh] overflow-y-auto scrollbar-hide">
           <div className="flex items-center gap-6 pb-2">
-            <div className="relative">
-              <img src={formData.avatar} className="w-24 h-24 rounded-2xl bg-gray-50 border border-gray-200 shadow-sm object-cover" alt="Profile" />
-              <button 
-                type="button"
-                onClick={randomizeAvatar}
-                className="absolute -bottom-2 -right-2 bg-white p-1.5 rounded-full shadow-md border border-gray-100 text-primary-600 hover:text-primary-700 transition-all"
-              >
-                <span className="material-symbols-outlined text-lg">refresh</span>
-              </button>
+            <div className="relative group cursor-pointer">
+              <div className="w-24 h-24 rounded-2xl bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden">
+                {formData.avatar ? (
+                  <img src={formData.avatar} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <span className="material-symbols-outlined text-gray-300 text-3xl">add_a_photo</span>
+                )}
+              </div>
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleFileChange} 
+                className="absolute inset-0 opacity-0 cursor-pointer" 
+              />
+              <div className="absolute -bottom-2 -right-2 bg-primary-500 text-white p-1 rounded-full shadow-md">
+                <span className="material-symbols-outlined text-[16px]">file_upload</span>
+              </div>
             </div>
             <div className="flex-1 space-y-1">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Profile Image URL</label>
-              <input 
-                type="text" 
-                value={formData.avatar}
-                onChange={e => setFormData({...formData, avatar: e.target.value})}
-                placeholder="https://..."
-                className="w-full px-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500/20 text-xs font-medium"
-              />
-              <p className="text-[10px] text-gray-400">Click refresh for a random avatar or paste a URL.</p>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Profile Photo</label>
+              <p className="text-[10px] text-gray-400 font-medium">Click on the image box to upload a profile photo from your device.</p>
             </div>
           </div>
 

@@ -17,10 +17,11 @@ interface StoreActions {
   preselectedTeacherId: string | null;
   taskFilterTeacherId: string | null;
   setTaskFilterTeacherId: (id: string | null) => void;
+  logout: () => void;
 }
 
 export const useStore = create<AppState & StoreActions>((set) => ({
-  currentUser: null,
+  currentUser: JSON.parse(localStorage.getItem('apex_user') || 'null'),
   isOnline: navigator.onLine,
   activeTaskId: null,
   currentView: 'dashboard',
@@ -30,7 +31,11 @@ export const useStore = create<AppState & StoreActions>((set) => ({
   teacherToEdit: null,
   preselectedTeacherId: null,
   taskFilterTeacherId: null,
-  setCurrentUser: (user) => set({ currentUser: user }),
+  setCurrentUser: (user) => {
+    if (user) localStorage.setItem('apex_user', JSON.stringify(user));
+    else localStorage.removeItem('apex_user');
+    set({ currentUser: user });
+  },
   setOnline: (isOnline) => set({ isOnline }),
   setActiveTask: (id) => set({ activeTaskId: id }),
   setCurrentView: (view) => set({ currentView: view }),
@@ -39,4 +44,8 @@ export const useStore = create<AppState & StoreActions>((set) => ({
   setStaffModalOpen: (isOpen, teacher = null) => 
     set({ isStaffModalOpen: isOpen, teacherToEdit: teacher }),
   setTaskFilterTeacherId: (id) => set({ taskFilterTeacherId: id }),
+  logout: () => {
+    localStorage.removeItem('apex_user');
+    set({ currentUser: null, currentView: 'dashboard', activeTaskId: null });
+  }
 }));

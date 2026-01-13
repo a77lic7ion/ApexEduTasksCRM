@@ -22,7 +22,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  phone?: string; // New field
+  password?: string; // For local login simulation
+  phone?: string;
   role: UserRole;
   department?: string;
   avatar: string;
