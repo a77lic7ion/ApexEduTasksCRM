@@ -1,3 +1,3 @@
 
-// File intentionally left empty and logic removed as per user request to disable all AI assistance.
+// AI functionality disabled.
 export const geminiService = {};
